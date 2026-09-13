@@ -27,6 +27,14 @@ replaced.
    device is left with broken volume keys.
 5. **Tune constants, not components.** Timing, layout, and colours live in
    `src/constants/volume.ts`.
+6. **Never derive volume state by counting events.** One physical press moves
+   the volume two steps, because the native key handler does not distinguish
+   key-down from key-up and runs for both. Render the absolute volume the module
+   reports; do not accumulate deltas.
+7. **Do not add a `TextInput` to the demo screen without expecting interception
+   to break.** The key listener sits on the content view, and Android routes key
+   events to a focused child first, bypassing it. While a text field is focused
+   the system volume HUD returns and the bar stops updating.
 
 ## Layout
 

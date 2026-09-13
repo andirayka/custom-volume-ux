@@ -72,12 +72,28 @@ volume key press
                  └─ VolumeBar animates
 ```
 
-### One native detail worth knowing
+### Native behaviour worth knowing
 
-Change events are only emitted when the volume **actually changes**. Holding the
-volume-up key at maximum volume produces no event at all, so the bar holds its
-last state and fades out. Freezing at the edge is therefore the natural
-behaviour, not something the UI has to special-case.
+Three details of the underlying library explain how the demo behaves. They are
+recorded because each one looks like a bug until you know where it comes from.
+
+**Change events only fire when the volume actually changes.** Holding volume-up
+at maximum volume produces no event at all, so the bar holds its last state and
+fades out. Freezing at the edge is a consequence of the native behaviour rather
+than something the UI special-cases.
+
+**One press moves the volume two steps.** The library's key handler never checks
+whether the key event is a press or a release, so both the down and up events for
+a single physical press run the same code. The volume therefore moves by two
+steps per press. The UI is unaffected because the bar renders absolute volume
+rather than counting presses — which is worth preserving if you change the hook.
+
+**Interception stops while a text field has focus.** The key listener sits on the
+content view, and Android forwards key events to a focused child first, bypassing
+that listener. If you add a `TextInput`, the system volume HUD comes back while it
+is focused and the bar stops updating. The library works around this by
+restoring focus to the content view when focus leaves an input, but it cannot
+intercept while one is focused.
 
 ## Project structure
 

@@ -73,6 +73,25 @@ animate and draw. It never imports the volume library. That boundary means the
 native code is confined to one file, and the bar can be rendered with arbitrary
 props in isolation.
 
+## Known limits of the interception
+
+The listener is installed on the content view (`android.R.id.content`) rather
+than by overriding the activity's `dispatchKeyEvent`. That choice is what makes
+interception focus-dependent: Android delivers key events to a focused child
+first, so a focused `TextInput` bypasses the listener entirely. The library
+restores focus to the content view when focus leaves an input, but it cannot
+intercept while one is focused.
+
+The handler also never checks whether the key event is a press or a release, so
+both events for a single physical press run the same adjust call. Volume
+therefore moves two steps per press. This is harmless here because the UI renders
+the absolute reported volume instead of counting presses — but it would break a
+UI built on accumulating deltas.
+
+Neither limit is worked around, because both are inherent to the library and
+neither affects the demo. They are documented so the behaviour is not mistaken
+for a bug in this project.
+
 ## Edge behaviour
 
 The native observer only fires when the volume _changes_. At maximum volume, an
