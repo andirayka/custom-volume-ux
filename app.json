@@ -28,6 +28,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "780c52b5-3722-4836-a5ac-9cc0a3e12f6c"
+      }
+    },
+    "owner": "andirayka"
   }
 }
