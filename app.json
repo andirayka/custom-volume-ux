@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Nulis",
-    "slug": "nulis",
+    "name": "Custom Volume UX",
+    "slug": "custom-volume-ux",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,10 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.andirayka.nulis"
+      "bundleIdentifier": "com.andirayka.customvolumeux"
     },
     "android": {
-      "package": "com.andirayka.nulis",
+      "package": "com.andirayka.customvolumeux",
       "adaptiveIcon": {
         "backgroundColor": "#07070A",
         "foregroundImage": "./assets/android-icon-foreground.png",
