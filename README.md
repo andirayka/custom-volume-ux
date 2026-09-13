@@ -18,25 +18,49 @@ changes; only the visible UI is replaced.
   steps.
 - Pulses the leading edge of the bar so you can see which way you pressed.
 
-## Why a development build
+## Getting it onto a phone
 
-Expo Go cannot run this project. `react-native-volume-manager` ships native
-Android code that must be compiled into the app, and the whole point of the demo
-is overriding the volume keys at the native level.
+Expo Go cannot run this project. There are two other routes, and neither needs a
+USB cable.
 
-```sh
-npm install
-npx expo run:android   # compiles a development build and installs it
-```
+### Standalone APK — use this for demoing
 
-Once the development build is installed, day-to-day work is normal Expo:
+Build it in the cloud and download the APK straight to the phone:
 
 ```sh
-npx expo start
+eas build -p android --profile preview
 ```
 
-Rebuild the native app only after adding a library with native code, changing
-`app.json`, or upgrading the Expo SDK:
+The JS bundle is embedded in the APK, so the app runs on your phone with no
+development server and no laptop. When the build finishes, open the link Expo
+prints on the device itself and install the APK. (Android will ask you to allow
+installing from your browser the first time.)
+
+This is the right profile when you want to show the volume UX to someone,
+record it for an article, or use it away from your desk.
+
+### Development build — use this to iterate
+
+```sh
+eas build -p android --profile development   # cloud, or:
+npx expo run:android                         # local, needs a cable
+```
+
+Install the resulting APK the same way, then run `npx expo start` and open the
+app. This build loads JavaScript from Metro, so it needs your laptop running and
+both devices on the same Wi-Fi. Launch it without a dev server and it will sit on
+its launcher screen — that is expected, not a broken build.
+
+### Why both profiles produce an APK
+
+EAS defaults to an AAB, which the Play Store consumes but a phone cannot install
+directly. Both profiles in `eas.json` set `android.buildType` to `apk` for that
+reason.
+
+### Rebuild when native code changes
+
+Adding a library with native code, changing `app.json`, or upgrading the SDK all
+require a fresh native build:
 
 ```sh
 npx expo prebuild --clean
