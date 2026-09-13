@@ -45,7 +45,7 @@ export function StoryScreen() {
 
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <View style={styles.content}>
-          <Text style={styles.kicker}>Nulis</Text>
+          <Text style={styles.kicker}>Volume UX</Text>
           <Text style={styles.title}>Custom volume UX</Text>
           <Text style={styles.body}>
             Press the hardware volume keys. The system HUD stays hidden and this

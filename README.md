@@ -1,4 +1,4 @@
-# Nulis
+# Custom Volume UX
 
 A React Native playground for **custom hardware volume UX on Android**.
 
