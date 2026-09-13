@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volume Button UX — Settled Design</title>
+    <style>
+      :root {
+        --bg: #0e0e10;
+        --surface: #1a1a1e;
+        --surface2: #252529;
+        --border: #333338;
+        --text: #e8e8ec;
+        --muted: #9a9aa2;
+        --accent: #ff3b5c;
+        --accent2: #4da3ff;
+        --radius: 14px;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 32px 20px;
+      }
+      h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 6px; }
+      .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 32px; }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        max-width: 1100px;
+        margin: 0 auto;
+      } }
+      .question {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin-bottom: 16px;
+      }
+      .q-num {
+        display: inline-block;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        letter-spacing: 0.03em;
+      }
+      .q-title { font-weight: 600; font-size: 1rem; margin-bottom: 8px; }
+      .q-body {
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.55;
+        margin-bottom: 14px;
+      }
+      .recommend {
+        background: var(--surface2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        border-left: 3px solid var(--accent2);
+      }
+      .recommend strong {
+        color: var(--accent2);
+        display: block;
+        margin-bottom: 3px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .arrow { color: var(--accent2); font-weight: 600; margin-right: 4px; }
+      .settled {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        opacity: 0.65;
+      }
+      .settled .q-num { background: #5ddb80; }
+      .settled .answer { font-size: 0.88rem; color: var(--text); margin-top: 4px; }
+      .settled .q-title { font-size: 0.92rem; margin-bottom: 2px; }
+      .round-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin: 28px 0 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Volume Button UX — Brainstorm</h1>
+    <p class="subtitle">
+      Designing a custom volume bar that overrides the phone's default UI
+      (Android, real volume change)
+    </p>
+
+    <div class="grid">
+      <div>
+        <!-- Round 1 -->
+        <div class="round-label">✓ Round 1 — Settled</div>
+        <div class="settled">
+          <span class="q-num">✓ Q1</span>
+          <div class="q-title">
+            How should we listen for volume button presses?
+          </div>
+          <div class="answer">react-native-volume-manager</div>
+        </div>
+        <div class="settled">
+          <span class="q-num">✓ Q2</span>
+          <div class="q-title">Where should the custom volume bar live?</div>
+          <div class="answer">
+            Top horizontal bar — obvious for demo but not tacky
+          </div>
+        </div>
+        <div class="settled">
+          <span class="q-num">✓ Q3</span>
+          <div class="q-title">
+            Should both volume-up and volume-down presses show the bar?
+          </div>
+          <div class="answer">Both buttons</div>
+        </div>
+        <div class="settled">
+          <span class="q-num">✓ Q4</span>
+          <div class="q-title">
+            Should pressing the button change the phone's real volume?
+          </div>
+          <div class="answer">Yes — use real volume change</div>
+        </div>
+        <div class="settled">
+          <span class="q-num">✓ Q5</span>
+          <div class="q-title">How should we set up the project?</div>
+          <div class="answer">Expo managed</div>
+        </div>
+
+        <!-- Round 2 -->
+        <div class="round-label">✓ Round 2 — Settled</div>
+        <div class="settled">
+          <span class="q-num">✓ Q6</span>
+          <div class="q-title">How should the bar appear and disappear?</div>
+          <div class="answer">Fade + slight slide down</div>
+        </div>
+        <div class="settled">
+          <span class="q-num">✓ Q7</span>
+          <div class="q-title">
+            How long should the bar stay visible after a press?
+          </div>
+          <div class="answer">800ms hold, 300ms fade out</div>
+        </div>
+        <div class="settled">
+          <span class="q-num">✓ Q8</span>
+          <div class="q-title">
+            What does "obvious for demo but not tacky" mean visually?
+          </div>
+          <div class="answer">White bar on dark scrim</div>
+        </div>
+        <div class="settled">
+          <span class="q-num">✓ Q9</span>
+          <div class="q-title">
+            Should the bar show discrete steps or a smooth continuous fill?
+          </div>
+          <div class="answer">Smooth continuous fill</div>
+        </div>
+        <div class="settled">
+          <span class="q-num">✓ Q10</span>
+          <div class="q-title">
+            Should there be any visual indicator of direction?
+          </div>
+          <div class="answer">Pulse on leading edge</div>
+        </div>
+
+        <!-- Round 3 -->
+        <div class="round-label">Round 3 — Settled</div>
+
+        <div class="question">
+          <span class="q-num">✓ Q11</span>
+          <div class="q-title">
+            How should we suppress the Android system volume HUD?
+          </div>
+          <div class="q-body">
+            <code>react-native-volume-manager</code> can change the real volume,
+            but Android will still show its own volume popup by default. We need
+            to hide that so only our bar shows. The library has a flag for this,
+            but we need to confirm the approach — does the library handle it
+            natively, or do we need extra config?
+          </div>
+          <div class="recommend">
+            <strong><span class="arrow">➡️</span> Recommendation</strong>
+            <strong
+              >Use the library's built-in
+              <code>showSystemVolume</code> flag</strong
+            >
+            — set it to <code>false</code> so the system HUD stays hidden while
+            the library still fires our volume-change events. Cleanest path, no
+            extra native code.
+          </div>
+        </div>
+
+        <div class="question">
+          <span class="q-num">✓ Q12</span>
+          <div class="q-title">What controls the bar's state?</div>
+          <div class="q-body">
+            The bar has two things to track: the current volume level (for the
+            fill width) and whether it's currently visible (for the animation).
+            These can live together in one piece of state or be split. The
+            choice affects how clean the component stays.
+          </div>
+          <div class="recommend">
+            <strong><span class="arrow">➡️</span> Recommendation</strong>
+            <strong>A single <code>useState</code> object</strong> with
+            <code>{ level: number, visible: boolean }</code>. Both values always
+            change together on a press, so splitting them adds complexity
+            without benefit. Keep it in the screen component that owns the bar.
+          </div>
+        </div>
+
+        <div class="question">
+          <span class="q-num">✓ Q13</span>
+          <div class="q-title">What happens when volume hits 0 or max?</div>
+          <div class="q-body">
+            When the user keeps pressing up at max volume (or down at zero), the
+            system stops firing change events — but they're still pressing.
+            Should the bar keep showing a subtle "at limit" state (like a brief
+            shake or a held pulse), or just freeze at the edge and fade
+            normally?
+          </div>
+          <div class="recommend">
+            <strong><span class="arrow">➡️</span> Recommendation</strong>
+            <strong>Freeze at the edge, fade normally.</strong> No extra shake
+            or indicator — it overcomplicates the demo. The bar fills to 100% or
+            empties to 0% and behaves the same as any other level. If they press
+            further, nothing changes; the timer still runs and it fades out.
+          </div>
+        </div>
+
+        <div class="question">
+          <span class="q-num">✓ Q14</span>
+          <div class="q-title">
+            Should the bar show the volume number (like "7/15")?
+          </div>
+          <div class="q-body">
+            Right now it's a pure visual bar. We could add a small text label
+            showing the current level or percentage. This makes it more
+            informative but also more "demo UI" — it might feel less like a real
+            product feature and more like a debug overlay.
+          </div>
+          <div class="recommend">
+            <strong><span class="arrow">➡️</span> Recommendation</strong>
+            <strong>No number label.</strong> A plain bar is cleaner and closer
+            to what Instagram actually does. The fill position alone
+            communicates the level. Adding text would make it feel like a debug
+            tool, not a polished UX.
+          </div>
+        </div>
+
+        <div class="question">
+          <span class="q-num">✓ Q15</span>
+          <div class="q-title">
+            Component structure — one component or split?
+          </div>
+          <div class="q-body">
+            We need a bar component, but we also need the volume-listening
+            logic. We could put everything in one
+            <code>VolumeBar</code> component (listener + animation + render), or
+            split into a <code>useVolumeListener</code> hook that returns state,
+            and a pure <code>VolumeBar</code> that renders it. The split is more
+            testable and reusable; the single component is simpler.
+          </div>
+          <div class="recommend">
+            <strong><span class="arrow">➡️</span> Recommendation</strong>
+            <strong
+              >Split: <code>useVolumeListener</code> hook +
+              <code>VolumeBar</code> component.</strong
+            >
+            The hook owns the subscription to volume changes and returns
+            <code>{ level, visible }</code>. The component is purely
+            presentational. This keeps the native wiring isolated from the
+            animation logic and makes both easier to reason about.
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
