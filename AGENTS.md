@@ -22,19 +22,29 @@ replaced.
 3. **Android only.** iOS cannot intercept hardware volume keys this way, and
    browsers expose no volume API. Keep non-Android platforms rendering the
    demo with an explanatory note rather than crashing.
-4. **Restore the native UI on teardown.** Any code path that hides the system
-   volume UI must re-enable it when the screen unmounts, or the rest of the
-   device is left with broken volume keys.
-5. **Tune constants, not components.** Timing, layout, and colours live in
+4. **Keep the native UI toggle and the teardown restore separate.** The
+   `enabled` toggle flips `showNativeVolumeUI` while the screen is alive; a
+   separate unmount effect always restores it to `enabled: true`. Collapsing
+   those two into one effect leaves the device without its own volume UI after
+   the user switches the custom UX off.
+5. **Toggling must not tear down the volume subscription.** The subscription is
+   installed once and reads `enabled` through a ref. Re-subscribing on every
+   toggle would drop the current level and re-request it, which is wasted work
+   and a source of flicker.
+6. **Tune constants, not components.** Timing, layout, and colours live in
    `src/constants/volume.ts`.
-6. **Never derive volume state by counting events.** One physical press moves
+7. **Never derive volume state by counting events.** One physical press moves
    the volume two steps, because the native key handler does not distinguish
    key-down from key-up and runs for both. Render the absolute volume the module
    reports; do not accumulate deltas.
-7. **Do not add a `TextInput` to the demo screen without expecting interception
+8. **Do not add a `TextInput` to the demo screen without expecting interception
    to break.** The key listener sits on the content view, and Android routes key
    events to a focused child first, bypassing it. While a text field is focused
    the system volume HUD returns and the bar stops updating.
+9. **Position the overlay with safe-area insets, not a hardcoded offset.** The
+   bar reads `insets.top` so it sits below the notification bar on any device.
+   A fixed `top` value puts it behind the status bar on phones with a taller
+   inset.
 
 ## Layout
 

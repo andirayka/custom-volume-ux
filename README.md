@@ -12,11 +12,13 @@ changes; only the visible UI is replaced.
 ## What it does
 
 - Intercepts the hardware volume keys on Android and hides the system HUD.
-- Shows a slim white bar pinned to the top of the screen, on a translucent
-  backdrop that stays readable over any content.
+- Shows a slim white bar below the notification bar, on a translucent backdrop
+  that stays readable over any content.
 - Fills and empties smoothly as volume changes, instead of snapping between
   steps.
 - Pulses the leading edge of the bar so you can see which way you pressed.
+- Toggles between the custom bar and the phone's own volume UI, so you can
+  compare them side by side.
 
 ## Getting it onto a phone
 

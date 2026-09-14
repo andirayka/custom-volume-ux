@@ -49,7 +49,7 @@ sequenceDiagram
 
     Keys->>Native: KEYCODE_VOLUME_UP
     Native->>Native: adjustStreamVolume(MUSIC)
-    Note over Native: returns true — system HUD suppressed
+    Note over Native: returns true — system HUD suppressed while enabled
     Native->>Hook: RNVMEventVolume { volume, type }
     Note over Hook: ignore non-music streams
     Hook->>Hook: set { level, visible, direction }
@@ -57,6 +57,28 @@ sequenceDiagram
     Bar->>Bar: animate fill + leading-edge pulse
     Note over Hook: 800ms after last press → visible: false
 ```
+
+While the custom UX is switched off the same events still arrive, but the hook
+records only the new level and never reveals the bar. The phone's own volume UI
+is left to do its job, and switching back on picks up from the correct level
+without a re-fetch.
+
+## The enable/disable toggle
+
+Turning the custom UX off calls `showNativeVolumeUI({ enabled: true })`, which
+makes the native module drop its key listener and hand the volume keys back to
+Android. Three details keep this correct:
+
+- **The toggle owns the runtime switch; a separate unmount effect always
+  restores `enabled: true`.** Collapsing them leaves the device with no volume
+  UI at all once the user switches off and leaves the screen.
+- **The volume subscription survives a toggle.** It is installed once and reads
+  `enabled` through a ref, so flipping the switch does not drop the current
+  level and re-request it.
+- **Switching off hides the bar synchronously**, in the toggle handler rather
+  than an effect, so the bar and the system UI are never on screen together.
+  Handling it in an effect also trips React Compiler's ban on `setState` inside
+  effects.
 
 ## Why the state lives where it does
 
