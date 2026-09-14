@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Animated, StyleSheet, View, useAnimatedValue } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   VOLUME_COLORS,
@@ -26,6 +27,7 @@ export type VolumeBarProps = {
  * so the press direction is visible without adding arrows or colour coding.
  */
 export function VolumeBar({ visible, level, direction }: VolumeBarProps) {
+  const insets = useSafeAreaInsets();
   const progress = useAnimatedValue(level);
   const fade = useAnimatedValue(visible ? 1 : 0);
   const pulse = useAnimatedValue(0);
@@ -77,7 +79,11 @@ export function VolumeBar({ visible, level, direction }: VolumeBarProps) {
   return (
     <Animated.View
       pointerEvents="none"
-      style={[styles.scrim, { opacity: fade, transform: [{ translateY }] }]}
+      style={[
+        styles.scrim,
+        { top: insets.top },
+        { opacity: fade, transform: [{ translateY }] },
+      ]}
     >
       <View style={styles.track}>
         <Animated.View style={[styles.fill, { width: fillWidth }]}>
@@ -97,7 +103,8 @@ export function VolumeBar({ visible, level, direction }: VolumeBarProps) {
 const styles = StyleSheet.create({
   scrim: {
     position: 'absolute',
-    top: 0,
+    // `top` comes from the safe-area inset at render time, so the overlay sits
+    // below the notification bar instead of behind it.
     left: 0,
     right: 0,
     height: VOLUME_LAYOUT.SCRIM_HEIGHT,
