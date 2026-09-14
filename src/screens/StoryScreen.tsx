@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { VolumeBar } from '../components/VolumeBar';
@@ -35,7 +35,8 @@ function StoryBackdrop() {
 }
 
 export function StoryScreen() {
-  const { level, visible, direction, supported } = useVolumeListener();
+  const { level, visible, direction, enabled, setEnabled, supported } =
+    useVolumeListener();
   const note = environmentNote(supported);
 
   return (
@@ -48,16 +49,30 @@ export function StoryScreen() {
           <Text style={styles.kicker}>Volume UX</Text>
           <Text style={styles.title}>Custom volume UX</Text>
           <Text style={styles.body}>
-            Press the hardware volume keys. The system HUD stays hidden and this
-            bar takes over — the same trick Instagram uses on stories.
+            Press the hardware volume keys. With the switch on, the system HUD
+            stays hidden and this bar takes over — the same trick Instagram uses
+            on stories.
           </Text>
+
           {note ? (
             <Text style={styles.note}>{note}</Text>
           ) : (
-            <Text style={styles.hint}>
-              Volume up fills the bar, volume down empties it. The leading edge
-              pulses in the direction you pressed.
-            </Text>
+            <View style={styles.toggleRow}>
+              <View style={styles.toggleText}>
+                <Text style={styles.toggleLabel}>Custom volume UX</Text>
+                <Text style={styles.toggleHint}>
+                  {enabled
+                    ? 'On — the phone’s volume UI is replaced by the bar above.'
+                    : 'Off — the phone’s own volume UI is back.'}
+                </Text>
+              </View>
+              <Switch
+                value={enabled}
+                onValueChange={setEnabled}
+                trackColor={{ false: '#3A3A4A', true: '#5B7FDB' }}
+                thumbColor="#FFFFFF"
+              />
+            </View>
           )}
         </View>
       </SafeAreaView>
@@ -111,12 +126,33 @@ const styles = StyleSheet.create({
     color: '#C9C9DB',
     fontSize: 15,
     lineHeight: 22,
-    marginBottom: 18,
+    marginBottom: 22,
   },
-  hint: {
-    color: '#7C7C99',
-    fontSize: 13,
-    lineHeight: 19,
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  toggleText: {
+    flex: 1,
+  },
+  toggleLabel: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 3,
+  },
+  toggleHint: {
+    color: '#8A8AA8',
+    fontSize: 12.5,
+    lineHeight: 18,
   },
   note: {
     color: '#FFB4B4',

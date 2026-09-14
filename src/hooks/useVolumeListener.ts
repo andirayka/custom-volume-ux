@@ -25,11 +25,15 @@ function clamp01(value: number): number {
 }
 
 /**
- * Subscribes to hardware volume changes and turns them into bar state.
+ * Subscribes to hardware volume changes and turns them into bar state, while
+ * optionally taking the volume keys away from the system.
  *
- * On Android, hiding the native volume UI makes the native module take over the
+ * When enabled, the native module hides the system volume UI and takes over the
  * volume keys: it raises/lowers the music stream itself and swallows the key
  * event, so the system HUD never appears and no double-adjustment happens.
+ *
+ * When disabled the module is told to stop intercepting, so the phone's own
+ * volume UI behaves exactly as it normally would.
  *
  * Native code detail that shapes this hook: change events are only emitted when
  * the volume actually changes. Pressing up at maximum volume therefore produces
@@ -38,11 +42,17 @@ function clamp01(value: number): number {
 export function useVolumeListener(): UseVolumeListenerResult {
   const isAndroid = Platform.OS === 'android';
 
+  const [enabled, setEnabledState] = useState(true);
   const [state, setState] = useState<VolumeState>(INITIAL_STATE);
   const [supported, setSupported] = useState(isAndroid);
 
   const hideTimer = useRef<TimerHandle | null>(null);
   const lastLevel = useRef(0);
+
+  // The volume subscription is installed once and must not be torn down every
+  // time the toggle flips, so the change handler reads `enabled` through a ref
+  // instead of closing over it.
+  const enabledRef = useRef(enabled);
 
   const clearHideTimer = useCallback(() => {
     if (hideTimer.current !== null) {
@@ -50,6 +60,24 @@ export function useVolumeListener(): UseVolumeListenerResult {
       hideTimer.current = null;
     }
   }, []);
+
+  // Switching the custom UX off hides the bar immediately, in the handler rather
+  // than an effect — otherwise the bar could sit on screen next to the phone's
+  // own volume UI, and a synchronised setState in an effect triggers a second
+  // render pass for no reason.
+  const setEnabled = useCallback(
+    (next: boolean) => {
+      enabledRef.current = next;
+      setEnabledState(next);
+      if (next) return;
+
+      clearHideTimer();
+      setState((previous) =>
+        previous.visible ? { ...previous, visible: false } : previous,
+      );
+    },
+    [clearHideTimer],
+  );
 
   useEffect(() => {
     if (!isAndroid) return;
@@ -72,6 +100,10 @@ export function useVolumeListener(): UseVolumeListenerResult {
       const level = clamp01(result.volume);
       const direction = level >= lastLevel.current ? 'up' : 'down';
       lastLevel.current = level;
+
+      // Still track the level while disabled, so the bar is already correct if
+      // it is switched back on. Only the reveal is suppressed.
+      if (!enabledRef.current) return;
       reveal(level, direction);
     };
 
@@ -83,9 +115,6 @@ export function useVolumeListener(): UseVolumeListenerResult {
         const initial = clamp01(volume);
         lastLevel.current = initial;
         setState((previous) => ({ ...previous, level: initial }));
-
-        await VolumeManager.showNativeVolumeUI({ enabled: false });
-        if (cancelled) return;
 
         subscription = VolumeManager.addVolumeListener(handleVolumeChange);
       } catch {
@@ -101,14 +130,32 @@ export function useVolumeListener(): UseVolumeListenerResult {
       cancelled = true;
       clearHideTimer();
       subscription?.remove();
+    };
+  }, [clearHideTimer, isAndroid]);
 
-      // Hand the volume keys back so the rest of the device behaves normally
-      // once this screen goes away.
+  // Whether the system volume UI is hidden is a separate concern from the volume
+  // subscription, so it gets its own effect. Toggling it does not disturb the
+  // subscription above.
+  useEffect(() => {
+    if (!isAndroid) return;
+
+    VolumeManager.showNativeVolumeUI({ enabled: !enabled }).catch(() => {
+      // Losing this means the toggle silently had no effect, which is worth
+      // surfacing rather than swallowing.
+      setSupported(false);
+    });
+  }, [enabled, isAndroid]);
+
+  // Hand the volume keys back when the screen goes away, or the rest of the
+  // device is left without its own volume UI.
+  useEffect(() => {
+    if (!isAndroid) return;
+    return () => {
       VolumeManager.showNativeVolumeUI({ enabled: true }).catch(() => {
         // Nothing useful to do if the restore fails during teardown.
       });
     };
-  }, [clearHideTimer, isAndroid]);
+  }, [isAndroid]);
 
-  return { ...state, supported };
+  return { ...state, enabled, setEnabled, supported };
 }
