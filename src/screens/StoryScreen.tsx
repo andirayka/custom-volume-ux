@@ -1,5 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, Switch, Text, View } from 'react-native';
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { VolumeBar } from '../components/VolumeBar';
@@ -41,7 +47,7 @@ export function StoryScreen() {
 
   return (
     <View style={styles.root}>
-      <StatusBar style="light" />
+      <StatusBar barStyle="light-content" />
       <StoryBackdrop />
 
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
